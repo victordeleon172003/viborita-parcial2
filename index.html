@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Viborita LCD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<main class="taller">
+
+  <section class="aparato" aria-label="Consola de bolsillo">
+    <div class="aparato__marca">
+      <span class="marca">Orbitel</span>
+      <span class="modelo">OR&#8209;2200</span>
+      <span class="led" id="led" aria-hidden="true"></span>
+    </div>
+
+    <div class="pantalla" id="pantalla">
+      <div class="hud">
+        <span class="hud__dato">PUNTOS <b id="marcador">0000</b></span>
+        <span class="hud__dato hud__dato--der">MEJOR <b id="record">0000</b></span>
+      </div>
+      <div class="lienzo">
+        <canvas id="campo" width="488" height="344" role="img" aria-label="Campo de juego de la viborita"></canvas>
+        <div class="aviso" id="aviso" aria-live="polite">
+          <p class="aviso__titulo" id="aviso-titulo">PULSA INICIAR</p>
+          <p class="aviso__pie" id="aviso-pie">FLECHAS O WASD PARA GIRAR</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="teclado">
+      <div class="blandas">
+        <button class="tecla tecla--blanda tecla--izq" id="btn-iniciar" type="button">Iniciar</button>
+        <button class="tecla tecla--blanda tecla--der" id="btn-pausa" type="button">Pausa</button>
+      </div>
+      <div class="dpad">
+        <button class="tecla tecla--dir dpad__arriba" data-dir="arriba" type="button" aria-label="Girar arriba"><span class="punta" aria-hidden="true"></span></button>
+        <button class="tecla tecla--dir dpad__izquierda" data-dir="izquierda" type="button" aria-label="Girar a la izquierda"><span class="punta" aria-hidden="true"></span></button>
+        <button class="tecla tecla--ok" id="btn-ok" type="button">OK</button>
+        <button class="tecla tecla--dir dpad__derecha" data-dir="derecha" type="button" aria-label="Girar a la derecha"><span class="punta" aria-hidden="true"></span></button>
+        <button class="tecla tecla--dir dpad__abajo" data-dir="abajo" type="button" aria-label="Girar abajo"><span class="punta" aria-hidden="true"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="ficha">
+    <header class="ficha__cab">
+      <p class="eyebrow">Juego de bolsillo &middot; matriz de puntos</p>
+      <h1>Viborita LCD</h1>
+      <p class="sumario">Malla de 20 &times; 14 celdas sobre pantalla reflectiva. La viborita no perdona: muere contra el marco y contra su propio cuerpo.</p>
+    </header>
+
+    <dl class="datos">
+      <div class="fila"><dt>Segmentos</dt><dd id="d-segmentos">5</dd></div>
+      <div class="fila"><dt>Velocidad</dt><dd><span id="d-velocidad">150</span> ms/celda</dd></div>
+      <div class="fila"><dt>Nivel</dt><dd id="d-nivel">1</dd></div>
+      <div class="fila"><dt>Manzanas</dt><dd id="d-manzanas">0</dd></div>
+      <div class="fila"><dt>Mejor marca</dt><dd id="d-mejor">0000</dd></div>
+    </dl>
+
+    <section class="controles">
+      <h2>Controles</h2>
+      <ul>
+        <li><kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> o <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>girar</span></li>
+        <li><kbd>Espacio</kbd><span>pausar y reanudar</span></li>
+        <li><kbd>Enter</kbd><span>partida nueva</span></li>
+        <li><kbd>Deslizar</kbd><span>sobre la pantalla, en el móvil</span></li>
+      </ul>
+    </section>
+
+    <p class="nota">Cada manzana acorta el intervalo entre celdas 3&nbsp;ms, hasta un piso de 70&nbsp;ms. El nivel sube cada cinco manzanas y multiplica lo que vale cada una.</p>
+  </aside>
+
+</main>
+<script src="game.js" defer></script>
+</body>
+</html>

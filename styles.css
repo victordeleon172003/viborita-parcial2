@@ -1,0 +1,372 @@
+/* ============================================================
+   Viborita LCD — Orbitel OR-2200
+   El aparato conserva su paleta en cualquier tema;
+   sólo cambia la superficie sobre la que está apoyado.
+   ============================================================ */
+
+:root {
+  /* superficie (sigue el tema del visor) */
+  --suelo: #e8e5d9;
+  --suelo-veta: #d6d3c4;
+  --tinta-suelo: #33352b;
+  --tinta-suave: #6c6f5f;
+  --regla: #c6c3b3;
+
+  /* aparato (fijo) */
+  --carcasa: #2a2d23;
+  --carcasa-luz: #3d4132;
+  --carcasa-honda: #15170f;
+  --tecla: #33372b;
+  --tecla-luz: #4a4f3c;
+  --tecla-canto: #171a10;
+  --serigrafia: #9a9d89;
+  --serigrafia-tenue: #6f7361;
+
+  /* pantalla */
+  --lcd: #a8b457;
+  --lcd-apagado: #9ba74d;
+  --lcd-canto: #7e8a3c;
+  --tinta-lcd: #1b2113;
+
+  --led: #d9502b;
+
+  --paso: clamp(1rem, 0.6rem + 1.4vw, 1.5rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --suelo: #13150e;
+    --suelo-veta: #1b1e15;
+    --tinta-suelo: #cfd2bf;
+    --tinta-suave: #8d9180;
+    --regla: #2c3024;
+  }
+}
+
+:root[data-theme="dark"] {
+  --suelo: #13150e;
+  --suelo-veta: #1b1e15;
+  --tinta-suelo: #cfd2bf;
+  --tinta-suave: #8d9180;
+  --regla: #2c3024;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding-block: clamp(1.75rem, 5vw, 3.5rem);
+  padding-inline: 1rem;
+  background:
+    radial-gradient(120% 80% at 50% 0%, var(--suelo-veta) 0%, var(--suelo) 62%);
+  color: var(--tinta-suelo);
+  font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--led);
+  outline-offset: 3px;
+}
+
+/* ---------- composición ---------- */
+
+.taller {
+  display: grid;
+  gap: clamp(2rem, 5vw, 3.25rem);
+  justify-content: center;
+  align-items: start;
+  grid-template-columns: minmax(0, 380px);
+}
+
+@media (min-width: 900px) {
+  .taller {
+    grid-template-columns: minmax(300px, 368px) minmax(260px, 340px);
+  }
+}
+
+/* ---------- el aparato ---------- */
+
+.aparato {
+  padding: 14px 14px 20px;
+  border-radius: 26px 26px 20px 20px;
+  background: linear-gradient(176deg, var(--carcasa-luz) 0%, var(--carcasa) 22%, var(--carcasa) 74%, var(--carcasa-honda) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 18px 34px -18px rgba(0, 0, 0, 0.7);
+}
+
+.aparato__marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 6px 12px;
+  color: var(--serigrafia);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.marca { color: var(--serigrafia); }
+.modelo { color: var(--serigrafia-tenue); letter-spacing: 0.16em; }
+
+.led {
+  margin-left: auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4a2318;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.led[data-encendido] {
+  background: var(--led);
+  box-shadow: 0 0 7px 1px rgba(217, 80, 43, 0.65);
+}
+
+.led[data-parpadea] { animation: latido 1.1s steps(2, jump-none) infinite; }
+
+@keyframes latido { 50% { opacity: 0.25; } }
+
+/* ---------- pantalla ---------- */
+
+.pantalla {
+  padding: 10px 10px 12px;
+  border-radius: 6px;
+  background: var(--lcd);
+  box-shadow:
+    inset 0 0 0 2px var(--lcd-canto),
+    inset 0 3px 8px rgba(27, 33, 19, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.06);
+  font-family: "Silkscreen", "Courier New", monospace;
+  color: var(--tinta-lcd);
+  user-select: none;
+  touch-action: none;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 7px;
+  margin-bottom: 8px;
+  border-bottom: 2px dotted var(--lcd-canto);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.hud b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.hud__dato--der { color: var(--tinta-lcd); opacity: 0.72; }
+
+.lienzo { position: relative; }
+
+#campo {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.aviso {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.aviso[hidden] { display: none !important; }
+
+.aviso__titulo {
+  margin: 0;
+  padding: 7px 12px;
+  background: var(--lcd);
+  box-shadow: 0 0 0 2px var(--tinta-lcd);
+  font-size: clamp(12px, 3.6vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.aviso__pie {
+  margin: 0;
+  padding: 3px 8px;
+  background: var(--lcd);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+/* ---------- teclado ---------- */
+
+.teclado {
+  display: grid;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.blandas { display: flex; justify-content: space-between; gap: 12px; }
+
+.tecla {
+  border: 0;
+  background: linear-gradient(180deg, var(--tecla-luz) 0%, var(--tecla) 55%);
+  box-shadow: 0 2px 0 var(--tecla-canto), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: var(--serigrafia);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 90ms ease, box-shadow 90ms ease, background 90ms ease;
+}
+
+.tecla:hover { background: linear-gradient(180deg, #52573f 0%, #3a3f2f 55%); }
+
+.tecla:active, .tecla[data-pulsada] {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--tecla-canto), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.tecla--blanda { flex: 1; padding: 11px 10px; }
+.tecla--izq { border-radius: 16px 5px 5px 16px; }
+.tecla--der { border-radius: 5px 16px 16px 5px; }
+
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  grid-template-rows: repeat(3, 42px);
+  gap: 5px;
+  justify-content: center;
+}
+
+.tecla--dir { border-radius: 7px; display: grid; place-items: center; }
+.dpad__arriba { grid-area: 1 / 2; border-radius: 16px 16px 7px 7px; }
+.dpad__izquierda { grid-area: 2 / 1; border-radius: 16px 7px 7px 16px; }
+.dpad__derecha { grid-area: 2 / 3; border-radius: 7px 16px 16px 7px; }
+.dpad__abajo { grid-area: 3 / 2; border-radius: 7px 7px 16px 16px; }
+
+.tecla--ok {
+  grid-area: 2 / 2;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #454a38 0%, #2d3126 60%);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.punta {
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-bottom-color: var(--serigrafia);
+}
+
+.dpad__abajo .punta { transform: rotate(180deg); }
+.dpad__izquierda .punta { transform: rotate(-90deg); }
+.dpad__derecha .punta { transform: rotate(90deg); }
+
+/* ---------- ficha de catálogo ---------- */
+
+.ficha { display: grid; gap: var(--paso); }
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--tinta-suave);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.ficha h1 {
+  margin: 0 0 10px;
+  font-size: clamp(1.9rem, 1.4rem + 1.8vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.sumario { margin: 0; max-width: 34ch; color: var(--tinta-suave); }
+
+.datos { margin: 0; display: grid; gap: 7px; }
+
+.fila {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--regla);
+}
+
+.fila dt {
+  color: var(--tinta-suave);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.fila dd {
+  margin: 0 0 0 auto;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.controles h2 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+.controles ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+
+.controles li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: var(--tinta-suave);
+}
+
+.controles li span { margin-left: 4px; }
+
+kbd {
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--regla);
+  background: var(--suelo-veta);
+  color: var(--tinta-suelo);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.nota {
+  margin: 0;
+  max-width: 38ch;
+  color: var(--tinta-suave);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
