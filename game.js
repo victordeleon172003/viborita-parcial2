@@ -13,6 +13,8 @@
   const MS_MINIMO = 70;
   const MS_POR_MANZANA = 3;
   const MANZANAS_POR_NIVEL = 5;
+  const CADA_CUANTAS_DORADAS = 7;   // la 7, 14, 21, ... de cada partida
+  const VALOR_DORADA = 3;           // la dorada vale el triple
   const CLAVE_RECORD = "viborita-lcd.mejor";
 
   const lienzo = document.getElementById("campo");
@@ -30,6 +32,7 @@
     nivel: document.getElementById("d-nivel"),
     manzanas: document.getElementById("d-manzanas"),
     mejor: document.getElementById("d-mejor"),
+    borrarRecord: document.getElementById("btn-borrar-record"),
   };
 
   const css = getComputedStyle(document.documentElement);
@@ -60,6 +63,15 @@
     [0, 1, 1, 1, 0],
   ];
 
+  // La dorada se dibuja hueca: sólo el contorno, el centro queda apagado.
+  const MANZANA_DORADA = [
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1],
+    [0, 1, 1, 1, 0],
+  ];
+
   const DIRS = {
     arriba: { x: 0, y: -1 },
     abajo: { x: 0, y: 1 },
@@ -74,7 +86,7 @@
     ArrowRight: "derecha", KeyD: "derecha",
   };
 
-  let cuerpo, rumbo, cola, comida;
+  let cuerpo, rumbo, cola, comida, comidaDorada;
   let puntos, manzanas, nivel, tickMs, mejor;
   let estado;              // "listo" | "jugando" | "pausa" | "fin"
   let acumulado, anterior, finDesde;
@@ -98,6 +110,14 @@
     }
   }
 
+  function borrarRecord() {
+    if (!mejor) return;
+    if (!window.confirm("¿Borrar la mejor marca? Esta acción no se puede deshacer.")) return;
+    mejor = 0;
+    guardarRecord(0);
+    pintarDatos();
+  }
+
   function celdaLibre() {
     const libres = [];
     for (let y = 0; y < ROWS; y += 1) {
@@ -106,6 +126,12 @@
       }
     }
     return libres[Math.floor(Math.random() * libres.length)] || { x: 0, y: 0 };
+  }
+
+  function siguienteComida() {
+    comida = celdaLibre();
+    // la que toca es la número manzanas + 1: 7, 14, 21, ... son doradas
+    comidaDorada = (manzanas + 1) % CADA_CUANTAS_DORADAS === 0;
   }
 
   function nuevaPartida() {
@@ -119,7 +145,7 @@
     tickMs = MS_INICIAL;
     acumulado = 0;
     finDesde = 0;
-    comida = celdaLibre();
+    siguienteComida();
   }
 
   function siguienteRumbo() {
@@ -154,9 +180,9 @@
     if (cabeza.x === comida.x && cabeza.y === comida.y) {
       manzanas += 1;
       nivel = Math.floor(manzanas / MANZANAS_POR_NIVEL) + 1;
-      puntos += 10 * nivel;
+      puntos += 10 * nivel * (comidaDorada ? VALOR_DORADA : 1);
       tickMs = Math.max(MS_MINIMO, MS_INICIAL - manzanas * MS_POR_MANZANA);
-      comida = celdaLibre();
+      siguienteComida();
     } else {
       cuerpo.pop();
     }
@@ -219,9 +245,10 @@
       const px = 4;
       const ox = comida.x * CELDA + 2;
       const oy = comida.y * CELDA + 2;
+      const sprite = comidaDorada ? MANZANA_DORADA : MANZANA;
       for (let f = 0; f < 5; f += 1) {
         for (let c = 0; c < 5; c += 1) {
-          if (MANZANA[f][c]) punto(ox + c * px, oy + f * px, px, px);
+          if (sprite[f][c]) punto(ox + c * px, oy + f * px, px, px);
         }
       }
     }
@@ -255,6 +282,7 @@
     salida.nivel.textContent = nivel;
     salida.manzanas.textContent = manzanas;
     salida.mejor.textContent = cifras(mejor);
+    salida.borrarRecord.disabled = mejor === 0;
   }
 
   function pintarAviso() {
@@ -331,6 +359,7 @@
   document.getElementById("btn-iniciar").addEventListener("click", comenzar);
   document.getElementById("btn-pausa").addEventListener("click", alternarPausa);
   document.getElementById("btn-ok").addEventListener("click", botonPrincipal);
+  salida.borrarRecord.addEventListener("click", borrarRecord);
 
   // Deslizar sobre la pantalla, para jugar con el pulgar.
   let origen = null;
