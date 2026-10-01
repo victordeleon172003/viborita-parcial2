@@ -321,6 +321,34 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.accion {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px dashed var(--regla);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--tinta-suave);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.accion:hover:not(:disabled) {
+  border-color: var(--tinta-suave);
+  background: var(--suelo-veta);
+  color: var(--tinta-suelo);
+}
+
+.accion:disabled {
+  border-style: solid;
+  cursor: default;
+  opacity: 0.4;
+}
+
 .controles h2 {
   margin: 0 0 10px;
   font-size: 11px;
